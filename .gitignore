@@ -1,0 +1,8 @@
+myvenv
+*.pyc
+*.pyo
+*~
+.idea/
+__pycache__
+*.log
+

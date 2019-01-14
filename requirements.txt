@@ -1,0 +1,8 @@
+clearbit==0.1.7
+Django==2.1.5
+django-rest-auth==0.9.3
+djangorestframework==3.9.0
+djangorestframework-jwt==1.11.0
+pyhunter==0.3
+pytz==2017.2
+
