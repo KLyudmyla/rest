@@ -1,10 +1,33 @@
+#### Run project
+##### Requirements
+`$ virtualenv myvenv`
 
-Signup
+`$ source myvenv/bin/activate`
+
+`$ pip install -r requirements.txt`
+
+##### Database migrate
+`$ python manage.py makemigrations`
+
+`$ python manage.py migrate`
+
+##### Database settings
+
+`'NAME': 'django_test',`
+
+`'USER': 'root',`
+
+`'PASSWORD': '12345',`
+##### Run server
+`$ python manage.py runserver
+`
+
+##### Signup
 
 ```http://127.0.0.1:8000/api/v1/registration/```
 ```Content-Type: application-json```
 
-Body:
+ Body:
 ```
 {
   "username": "username",
@@ -14,9 +37,7 @@ Body:
 }
 ```
 
-Requirements:
-
-● Token authentication (JWT is prefered)
+##### Token authentication (JWT is prefered)
 
 ```$ curl -X POST -d "username=newadmin&password=password123" http://localhost:8000/api-token-auth/```
 
@@ -35,12 +56,12 @@ Body:
 }
 ```
 
-Response:
+Response example:
 ```{"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5ld2FkbWluIiwidXNlcl9pZCI6MjcsImV4cCI6MTU0Njc5MzIzMiwiZW1haWwiOiJrYWx1emh5bm92YUBnbWFpbC5jb20ifQ.BBhR-CsTi63yO9mKKPidFlOfh-RA90FXM_WxiFk44XQ"}```
 
 For User and Post objects, candidate is free to define attributes as they see fit.
 
-Example Post Request create post. 
+##### Example Post Request to create a post. 
 
 POST request:
 
@@ -67,7 +88,7 @@ Response example:
 }
 ```
 
-GET request
+##### GET request to view posts
 
 `http://127.0.0.1:8000/api/v1/posts/`
 
@@ -91,8 +112,8 @@ Response example:
 ```
 
 
-Like.
-Request example (method POST)
+#### Like.
+##### Request example (method POST)
 ```
 http://127.0.0.1:8000/api/v1/posts/like/
 ```
@@ -115,7 +136,7 @@ Response:
 "like": false
 }
 ```
-Request example (method GET)
+##### Request example (method GET)
 ```
 http://127.0.0.1:8000/api/v1/posts/like/
 ```
@@ -138,24 +159,27 @@ Response:
 }
 ```
 
+##### Request example (method GET) post detail
+```
+http://127.0.0.1:8000/api/v1/posts/581
+```
+Response:
+```  
 
-Automated bot
+{
+    "title": "It is great",
+    "text": "Hello ladies and gentlemen!\nThank you so much ..."
+}
+```
+
+
+##### Automated bot
 
 ```http://127.0.0.1:8000/bot/```
 
-Bot read the configuration and create this activity:
-● signup users (number provided in config)
-● each user creates random number of posts with any content (up to max_posts_per_user)
-After creating the signup and posting activity, posts should be liked using following rules:
-● next user to perform a like is the user who has most posts and has not reached max likes
-● user performs “like” activity until he reaches max likes
-● user can only like random posts from users who have at least one post with 0 likes
-● if there is no posts with 0 likes, bot stops
-● users cannot like their own posts
-● posts can be liked multiple times, but one user can like a certain post only once
-
 we have now
-```NUMBER_OF_USERS = 3
+```
+NUMBER_OF_USERS = 3
 MAX_POSTS_PER_USER = 5
 MAX_LIKES_PER_USER = 4
 ```

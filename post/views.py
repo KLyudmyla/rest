@@ -7,14 +7,20 @@ from post.models import Post, Like
 
 from rest_framework import permissions
 from rest_framework import generics
-from django.db.models import F
+from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.views import APIView
+
+
+class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method == "GET"
 
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated | ReadOnly,)
 
-    @permission_classes((permissions.AllowAny,))
     def get(self, request, *args, **kwargs):
         """
         List all tasks.
@@ -23,7 +29,6 @@ class PostList(generics.ListCreateAPIView):
         serializer = PostSerializerGet(queryset, many=True)
         return Response(serializer.data)
 
-    @permission_classes((permissions.IsAuthenticated,))
     def post(self, request, *args, **kwargs):
         """
         Create a new task.
@@ -51,11 +56,11 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class LikeList(generics.ListCreateAPIView):
+class LikeList(generics.ListCreateAPIView, APIView):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+    permission_classes = (IsAuthenticated|ReadOnly,)
 
-    @permission_classes((permissions.AllowAny,))
     def get(self, request,  *args, **kwargs):
         """
         List all tasks.
@@ -64,7 +69,6 @@ class LikeList(generics.ListCreateAPIView):
         serializer = LikeSerializerGet(queryset, many=True)
         return Response(serializer.data)
 
-    @permission_classes((permissions.IsAuthenticated,))
     def post(self, request, *args, **kwargs):
         """
         Create a new task.

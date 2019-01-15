@@ -63,14 +63,14 @@ class BotSerializer(serializers.ModelSerializer):
             except:
                 logger.warning('There is some problem with liking posts')
                 return ' {"success": False, "message": "There is some problem with like"}'
-
-
         return result
 
     @staticmethod
     def create_post(token, username):
-        title_choice = ['Thank you', "I am happy", "You are the best", "This is a great honor for me", "It is great"]
-        greeting = ['Hi', 'Hello', 'Hew', 'Morning', 'Good Morning']
+        title_choice = ['Thank you', "%s is happy" % username, "You are the best", "This is a great honor for me",
+                        "It is great", "Hi", "Hey", "Hello from %s" % username, "What a wonderful day",
+                        "Hi from %s" % username]
+        greeting = ['Hi', 'Hello', 'Hey', 'Morning', 'Good Morning']
         appeal = ['guys!', 'friends!', 'team!', 'ladies and gentlemen!']
         thanks = ['Thank you very much', 'Thank you so much', "Thank you a lot"]
         content1 = ['Good news', 'I have great news', 'What I wanted to say is',
@@ -99,11 +99,13 @@ class BotSerializer(serializers.ModelSerializer):
 
         post_id = random.choice(list_posts_id)
         # one user can like a certain post only once
-        more_then_one_like_per_user = User.objects.get(username=username).id in Like.objects.filter(post=post_id).values_list("user", flat=True)
+        more_then_one_like_per_user = User.objects.get(username=username).id in Like.objects.filter(
+            post=post_id).values_list("user", flat=True)
         user_has_post_without_likes = BotSerializer.if_user_has_post_without_likes(post_id)
         while more_then_one_like_per_user and user_has_post_without_likes:
             post_id = random.choice(list_posts_id)
-            more_then_one_like_per_user = User.objects.get(username=username).id in Like.objects.filter(post=post_id).values_list("user", flat=True)
+            more_then_one_like_per_user = User.objects.get(username=username).id in Like.objects.filter(
+                post=post_id).values_list("user", flat=True)
             user_has_post_without_likes = BotSerializer.if_user_has_post_without_likes(post_id)
 
         payload = {'post': post_id, 'like': like}
@@ -148,21 +150,19 @@ class BotSerializer(serializers.ModelSerializer):
     def exist_post_without_likes():
         list_posts_id = Post.objects.all().values_list('pk', flat=True)
         list_post_with_likes = Like.objects.all().values_list('post_id', flat=True)
-        for id in list_posts_id:
-            if id not in list_post_with_likes:
+        for post_id in list_posts_id:
+            if post_id not in list_post_with_likes:
                 return True
         return False
 
     @staticmethod
     def if_user_has_post_without_likes(post_id):
-        ''' user can only like random posts from users who have at least one post with 0 likes '''
-
+        # user can only like random posts from users who have at least one post with 0 likes
         author = Post.objects.get(pk=post_id).author
         # Post.objects.filter(post=post_id).values_list("user", flat=True)
         list_posts_id = Post.objects.filter(author=author).values_list('pk', flat=True)
         list_post_with_likes = Like.objects.all().values_list('post_id', flat=True)
-        for id in list_posts_id:
-            if id not in list_post_with_likes:
+        for post_id in list_posts_id:
+            if post_id not in list_post_with_likes:
                 return True
         return False
-
